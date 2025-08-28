@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_app/utils/app_routes.dart';
 import 'package:flutter_ecommerce_app/view_models/product_details_cubit/product_details_cubit.dart';
 import 'package:flutter_ecommerce_app/views/pages/custom_bottom_navbar.dart';
@@ -12,15 +13,21 @@ class AppRouter {
           builder: (_) => const CustomBottomNavbar(),
           settings: settings,
         );
+
       case AppRoutes.productDetailsRoute:
         final String productId = settings.arguments as String;
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
-            create: (context) => ProductDetailsCubit(),
+            create: (context) {
+              final cubit = ProductDetailsCubit();
+              cubit.getProductDetails(productId);
+              return cubit;
+            },
             child: ProductDetailsPage(productId: productId),
           ),
           settings: settings,
         );
+        
       default:
         return MaterialPageRoute(
           settings: settings,

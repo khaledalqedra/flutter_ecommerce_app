@@ -86,7 +86,7 @@ class HomeTabView extends StatelessWidget {
                     return InkWell(
                       onTap: () =>
                         Navigator.of(context, rootNavigator: true)
-                        .pushNamed(AppRoutes.productDetailsRoute, arguments: state.products[index]),
+                        .pushNamed(AppRoutes.productDetailsRoute, arguments: state.products[index].id),
                         child: ProductItem(
                         productItem: state.products[index]
                       ),

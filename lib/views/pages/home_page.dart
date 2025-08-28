@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       children: [
                         const CircleAvatar(
                           radius: 25,
-                          backgroundImage: AssetImage('khaled pr.png'),
+                          backgroundImage: NetworkImage('https://hips.hearstapps.com/hmg-prod/images/pink-purple-chrysanthemum-royalty-free-image-1750095982.pjpeg?crop=0.573xw:1.00xh;0.376xw,0&resize=980:*')
                         ),
                         const SizedBox(width: 16.0),
                         Column(

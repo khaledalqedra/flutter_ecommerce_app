@@ -6,8 +6,10 @@ class ProductItemModel {
   final String imageUrl;
   final bool isFavorite;
   final String category;
+  final double avergeRate;
+  final int quantity;
 
-  ProductItemModel({
+  ProductItemModel ({
     required this.id,
     required this.name,
     this.description =
@@ -16,7 +18,34 @@ class ProductItemModel {
     required this.imageUrl,
     this.isFavorite = false,
     required this.category,
+    this.avergeRate = 4.5,
+    this.quantity = 1,
   });
+
+
+  ProductItemModel copyWith({
+    String? id,
+    String? name,
+    String? imageUrl,
+    String? description,
+    double? price,
+    bool? isFavorite,
+    String? category,
+    double? avergeRate,
+    int? quantity,
+  }) {
+    return ProductItemModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      imageUrl: imageUrl ?? this.imageUrl,
+      description: description ?? this.description,
+      price: price ?? this.price,
+      isFavorite: isFavorite ?? this.isFavorite,
+      category: category ?? this.category,
+      avergeRate: avergeRate ?? this.avergeRate,
+      quantity: quantity ?? this.quantity,
+    );
+  }
 }
 
 List<ProductItemModel> dummyProducts = [
