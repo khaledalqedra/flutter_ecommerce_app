@@ -1,3 +1,13 @@
+enum ProductSize{
+  S,
+  M,
+  L,
+  XL,
+  XXL,
+}
+
+
+
 class ProductItemModel {
   final String id;
   final String name;
@@ -7,7 +17,7 @@ class ProductItemModel {
   final bool isFavorite;
   final String category;
   final double avergeRate;
-  final int quantity;
+  
 
   ProductItemModel ({
     required this.id,
@@ -19,7 +29,7 @@ class ProductItemModel {
     this.isFavorite = false,
     required this.category,
     this.avergeRate = 4.5,
-    this.quantity = 1,
+    
   });
 
 
@@ -32,7 +42,7 @@ class ProductItemModel {
     bool? isFavorite,
     String? category,
     double? avergeRate,
-    int? quantity,
+   
   }) {
     return ProductItemModel(
       id: id ?? this.id,
@@ -43,7 +53,7 @@ class ProductItemModel {
       isFavorite: isFavorite ?? this.isFavorite,
       category: category ?? this.category,
       avergeRate: avergeRate ?? this.avergeRate,
-      quantity: quantity ?? this.quantity,
+     
     );
   }
 }
