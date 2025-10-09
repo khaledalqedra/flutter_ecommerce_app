@@ -53,4 +53,5 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     quantity--;
     emit(QuantityCounterLoaded(value:quantity));
   }
+  
 }

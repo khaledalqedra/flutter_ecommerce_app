@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce_app/utils/app_colors.dart';
 import 'package:flutter_ecommerce_app/view_models/cart_cubit/cart_cubit.dart';
 import 'package:flutter_ecommerce_app/view_models/home_cubit/home_cubit.dart';
 import 'package:flutter_ecommerce_app/views/pages/cart_page.dart';
@@ -18,6 +20,7 @@ class CustomBottomNavbar extends StatefulWidget {
 
 class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
   late final PersistentTabController _controller;
+  int curreentIndex = 0;
 
   @override
   void initState() {
@@ -27,22 +30,8 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
 
   List<Widget> _buildScreens(BuildContext context) {
     return [
-      BlocProvider(
-        create: (context) {
-        final cubit = HomeCubit();
-        cubit.getHomeData();
-        return cubit;
-      },
-        child:const HomePage(),
-      ),
-      BlocProvider(
-        create: (context) {
-          final cubit = CartCubit();
-          cubit.getCartItems();
-          return cubit;
-        },
-        child: const CartPage(),
-      ),
+      const HomePage(),
+      const CartPage(),
       const FavoritesPage(),
       const ProfilePage(),
     ];
@@ -53,64 +42,111 @@ class _CustomBottomNavbarState extends State<CustomBottomNavbar> {
       PersistentBottomNavBarItem(
         icon: const Icon(CupertinoIcons.home),
         title: ("Home"),
-        activeColorPrimary: CupertinoColors.activeBlue,
-        inactiveColorPrimary: CupertinoColors.systemGrey,
+        activeColorPrimary: Theme.of(context).primaryColor,
+        inactiveColorPrimary: AppColors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(CupertinoIcons.cart),
         title: ("Cart"),
-        activeColorPrimary: CupertinoColors.activeBlue,
-        inactiveColorPrimary: CupertinoColors.systemGrey,
+        activeColorPrimary: Theme.of(context).primaryColor,
+        inactiveColorPrimary: AppColors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(CupertinoIcons.heart),
         title: ("Favorites"),
-        activeColorPrimary: CupertinoColors.activeBlue,
-        inactiveColorPrimary: CupertinoColors.systemGrey,
+        activeColorPrimary: Theme.of(context).primaryColor,
+        inactiveColorPrimary: AppColors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(CupertinoIcons.person),
         title: ("Profile"),
-        activeColorPrimary: CupertinoColors.activeBlue,
-        inactiveColorPrimary: CupertinoColors.systemGrey,
+        activeColorPrimary: Theme.of(context).primaryColor,
+        inactiveColorPrimary: AppColors.grey,
       ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    return PersistentTabView(
-      context,
-      controller: _controller,
-      screens: _buildScreens(context),
-      items: _navBarsItems(),
-      confineInSafeArea: true,
-      backgroundColor: Colors.white, // Default is Colors.white.
-      handleAndroidBackButtonPress: true, // Default is true.
-      resizeToAvoidBottomInset:
-          true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
-      stateManagement: false, // Default is true.
-      hideNavigationBarWhenKeyboardShows:
-          true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
-      decoration: NavBarDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        colorBehindNavBar: Colors.white,
+    return Scaffold(
+      appBar: AppBar(
+        leading: const Padding(
+          padding: EdgeInsets.all(4.0),
+          child: CircleAvatar(
+              radius: 25,
+              backgroundImage: CachedNetworkImageProvider(
+                  'https://hips.hearstapps.com/hmg-prod/images/pink-purple-chrysanthemum-royalty-free-image-1750095982.pjpeg?crop=0.573xw:1.00xh;0.376xw,0&resize=980:*')),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Khaled',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            Text(
+              'Let\'s go shopping!',
+              style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                    color: Colors.grey,
+                  ),
+            ),
+          ],
+        ),
+        actions: [
+          if (curreentIndex == 0) ...[
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.search),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.notifications),
+            ),
+          ] else if (curreentIndex == 1)
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.shopping_bag),
+            ),
+        ],
       ),
-      popAllScreensOnTapOfSelectedTab: true,
-      popActionScreens: PopActionScreensType.all,
-      itemAnimationProperties: const ItemAnimationProperties(
-        // Navigation Bar's items animation properties.
-        duration: Duration(milliseconds: 200),
-        curve: Curves.ease,
+      body: PersistentTabView(
+        context,
+        controller: _controller,
+        screens: _buildScreens(context),
+        items: _navBarsItems(),
+        onItemSelected: (index) {
+          setState(() {
+            curreentIndex = index;
+          });
+        },
+        confineInSafeArea: true,
+        backgroundColor: AppColors.white, // Default is Colors.white.
+        handleAndroidBackButtonPress: true, // Default is true.
+        resizeToAvoidBottomInset:
+            true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
+        stateManagement: false, // Default is true.
+        hideNavigationBarWhenKeyboardShows:
+            true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
+        decoration: NavBarDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          colorBehindNavBar: AppColors.white,
+        ),
+        popAllScreensOnTapOfSelectedTab: true,
+        popActionScreens: PopActionScreensType.all,
+        itemAnimationProperties: const ItemAnimationProperties(
+          // Navigation Bar's items animation properties.
+          duration: Duration(milliseconds: 200),
+          curve: Curves.ease,
+        ),
+        screenTransitionAnimation: const ScreenTransitionAnimation(
+          // Screen transition animation on change of selected tab.
+          animateTabTransition: true,
+          curve: Curves.ease,
+          duration: Duration(milliseconds: 200),
+        ),
+        navBarStyle:
+            NavBarStyle.style6, // Choose the nav bar style with this property.
       ),
-      screenTransitionAnimation: const ScreenTransitionAnimation(
-        // Screen transition animation on change of selected tab.
-        animateTabTransition: true,
-        curve: Curves.ease,
-        duration: Duration(milliseconds: 200),
-      ),
-      navBarStyle:
-          NavBarStyle.style6, // Choose the nav bar style with this property.
     );
   }
 }

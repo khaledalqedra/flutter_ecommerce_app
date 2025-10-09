@@ -14,7 +14,7 @@ class CartItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = BlocProvider.of<CartCubit>(context);
     return Padding(
-      padding: const EdgeInsets.only(left:16.0, right: 16.0,bottom: 8.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
       child: Row(
         children: [
           DecoratedBox(
@@ -39,7 +39,9 @@ class CartItemWidget extends StatelessWidget {
                   cartItem.product.name,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 4.0,),
+                const SizedBox(
+                  height: 4.0,
+                ),
                 Text.rich(
                   TextSpan(
                     text: 'Size:',
@@ -54,36 +56,57 @@ class CartItemWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 12.0,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    BlocBuilder<CartCubit, CartState>(
-                      bloc: cubit,
-                      buildWhen: (previous, current) =>
-                          current is QuantityCounterLoaded,
-                      builder: (context, state) {
-                        if (state is QuantityCounterLoaded) {
-                          return CounterWidget(
+                const SizedBox(
+                  height: 12.0,
+                ),
+                BlocBuilder<CartCubit, CartState>(
+                  bloc: cubit,
+                  buildWhen: (previous, current) =>
+                      current is QuantityCounterLoaded &&
+                      current.productId == cartItem.product.id,
+                  builder: (context, state) {
+                    if (state is QuantityCounterLoaded) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CounterWidget(
                             value: state.value,
                             productId: cartItem.product.id,
                             cubit: cubit,
-                          );
-                        }
-                        return CounterWidget(
+                          ),
+                          Text(
+                            '\$${(state.value * cartItem.product.price).toStringAsFixed(1)}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall!
+                                .copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ],
+                      );
+                    }
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CounterWidget(
                           value: cartItem.quantity,
                           productId: cartItem.product.id,
                           cubit: cubit,
-                        );
-                      },
-                    ),
-                    Text(
-                      '\$${cartItem.product.price}',
-                      style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                          initialValue: cartItem.quantity,
+                        ),
+                        Text(
+                          '\$${cartItem.totalPrice.toStringAsFixed(1)}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall!
+                              .copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),

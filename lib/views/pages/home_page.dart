@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_app/utils/app_colors.dart';
@@ -22,59 +23,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return BlocProvider(
+      create: (context) {
+          final cubit = HomeCubit();
+          cubit.getHomeData();
+          return cubit;
+        },
+      child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 25,
-                        backgroundImage: NetworkImage('https://hips.hearstapps.com/hmg-prod/images/pink-purple-chrysanthemum-royalty-free-image-1750095982.pjpeg?crop=0.573xw:1.00xh;0.376xw,0&resize=980:*')
-                      ),
-                      const SizedBox(width: 16.0),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Khaled',
-                            style: Theme.of(context).textTheme.labelLarge,
-                          ),
-                          Text(
-                            'Let\'s go shopping!',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelSmall!
-                                .copyWith(
-                                  color: Colors.grey,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.search),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.notifications),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 24.0,
-              ),
               TabBar(
                 controller: _tabController,
                 unselectedLabelColor: AppColors.grey,
