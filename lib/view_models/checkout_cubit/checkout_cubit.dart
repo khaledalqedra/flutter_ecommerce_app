@@ -1,12 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_app/models/add_to_cart_model.dart';
+import 'package:flutter_ecommerce_app/models/payment_card_model.dart';
 
 part 'checkout_state.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
   CheckoutCubit() : super(CheckoutInitial());
 
-  void getCartItem() {
+  void getCartItems() {
     emit(CheckoutLoading());
     final cartItems = dummyCart;
     final subtotal = cartItems.fold(
@@ -15,9 +16,16 @@ class CheckoutCubit extends Cubit<CheckoutState> {
             previousValue + element.product.price * element.quantity);
     final numOfProducts = cartItems.fold(
         0, (previousValue, element) => previousValue + element.quantity);
-    emit(CheckoutLoaded(
-        cartItems: cartItems,
-        totalAmount: subtotal + 10.0,
-        numOfProducts: numOfProducts)); // Assuming a fixed shipping fee of 10.0
+    final chosenPaymentCard = dummyPaymentCards.firstWhere(
+        (element) => element.isChosen == true, orElse: () => dummyPaymentCards.first);
+        
+
+    emit(
+      CheckoutLoaded(
+          cartItems: cartItems,
+          totalAmount: subtotal + 10.0,
+          numOfProducts: numOfProducts,
+          chosenPaymentCard: chosenPaymentCard,),
+    ); // Assuming a fixed shipping fee of 10.0
   }
 }
