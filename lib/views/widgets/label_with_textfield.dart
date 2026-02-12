@@ -17,6 +17,7 @@ class LabelWithTextField extends StatefulWidget {
     required this.hintText,
     this.suffixIcon,
     this.obsecureText = false,
+    required IconData icon,
   });
 
   @override

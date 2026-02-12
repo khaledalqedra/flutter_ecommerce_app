@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce_app/models/location_item_model.dart';
 import 'package:flutter_ecommerce_app/models/payment_card_model.dart';
 import 'package:flutter_ecommerce_app/utils/app_colors.dart';
+import 'package:flutter_ecommerce_app/utils/app_routes.dart';
 import 'package:flutter_ecommerce_app/view_models/add_new_card/payment_methods_cubit.dart';
 import 'package:flutter_ecommerce_app/view_models/checkout_cubit/checkout_cubit.dart';
 import 'package:flutter_ecommerce_app/views/widgets/checkout_headlines_item.dart';
@@ -20,25 +22,62 @@ class CheckoutPage extends StatelessWidget {
         paymentCard: chosenCard,
         onItemTapped: () {
           showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (_) {
-                return SizedBox(
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height * 0.65,
-                    child: BlocProvider(
-                      create: (context) {
-                        final cubit = PaymentMethodsCubit();
-                          cubit.fetchPaymentMethods();
-                        return cubit;
-                      },
-                      child: const PaymentMethodBottomSheet(),
-                    ));
-              },).then((value) => BlocProvider.of<CheckoutCubit>(context).getCartItems());
+            context: context,
+            isScrollControlled: true,
+            builder: (_) {
+              return SizedBox(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.65,
+                  child: BlocProvider(
+                    create: (context) {
+                      final cubit = PaymentMethodsCubit();
+                      cubit.fetchPaymentMethods();
+                      return cubit;
+                    },
+                    child: const PaymentMethodBottomSheet(),
+                  ));
+            },
+          ).then((value) =>
+              BlocProvider.of<CheckoutCubit>(context).getCartItems());
         },
       );
     } else {
-      return const EmptyShippingPayment(title: 'Add Payment Method');
+      return const EmptyShippingPayment(
+          title: 'Add Payment Method', isPayment: true);
+    }
+  }
+
+  Widget _buildShippingItem(
+      LocationItemModel? chosenAddress, BuildContext context) {
+    if (chosenAddress != null) {
+      return Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24.0),
+            child: CachedNetworkImage(
+              imageUrl: chosenAddress.imgurl,
+              height: 100,
+              width: 140,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(width: 16.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(chosenAddress.city,
+                  style: Theme.of(context).textTheme.titleMedium),
+              Text('${chosenAddress.city}, ${chosenAddress.country}',
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        color: AppColors.grey,
+                      )),
+            ],
+          ),
+        ],
+      );
+    } else {
+      return const EmptyShippingPayment(
+          title: 'Add Shipping Address', isPayment: false);
     }
   }
 
@@ -71,17 +110,26 @@ class CheckoutPage extends StatelessWidget {
             } else if (state is CheckoutLoaded) {
               final cartItems = state.cartItems;
               final chosenPaymentCard = state.chosenPaymentCard;
+              final chosenAddress = state.chosenAddress;
               return SafeArea(
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0),
                     child: Column(
                       children: [
-                        CheckoutHeadlinesItem(title: 'Address', onTap: () {}),
+                        CheckoutHeadlinesItem(
+                            title: 'Address',
+                            onTap: () {
+                              Navigator.of(context)
+                                  .pushNamed(AppRoutes.chooseLocation)
+                                  .then(
+                                    (value) => BlocProvider.of<CheckoutCubit>(context).getCartItems(),
+                                  );
+                            }),
                         const SizedBox(height: 16.0),
-                        const EmptyShippingPayment(
-                            title: 'Add Shipping Address'),
-                        const SizedBox(height: 16.0),
+                        _buildShippingItem(chosenAddress, context),
+                        const SizedBox(height: 24.0),
                         CheckoutHeadlinesItem(
                           title: 'Products',
                           numOfProducts: state.numOfProducts,

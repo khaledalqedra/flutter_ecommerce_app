@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_app/utils/app_colors.dart';
 import 'package:flutter_ecommerce_app/view_models/add_new_card/payment_methods_cubit.dart';
-import 'package:flutter_ecommerce_app/views/widgets/label_with_textfield_new_card.dart';
+import 'package:flutter_ecommerce_app/views/widgets/label_with_textfield.dart';
 
 class AddNewCardPage extends StatefulWidget {
   const AddNewCardPage({super.key});
@@ -37,29 +37,33 @@ class _AddNewCardPageState extends State<AddNewCardPage> {
                 LabelWithTextField(
                   label: 'Card Number',
                   controller: _cardNumberController,
-                  prefixIcon: Icons.credit_card,
+                  icon: Icons.credit_card,
                   hintText: 'Enter card number',
+                  prefixIcon: Icons.credit_card,
                 ),
                 const SizedBox(height: 20),
                 LabelWithTextField(
                   label: 'Card Holder Name',
                   controller: _cardHolderNameController,
-                  prefixIcon: Icons.person,
+                  icon: Icons.person,
                   hintText: 'Enter card holder name',
+                  prefixIcon: Icons.person,
                 ),
                 const SizedBox(height: 20),
                 LabelWithTextField(
                   label: 'Expiry Date',
                   controller: _expiryDateController,
-                  prefixIcon: Icons.date_range,
+                  icon: Icons.date_range,
                   hintText: 'Enter expiry date',
+                  prefixIcon: Icons.date_range,
                 ),
                 const SizedBox(height: 20),
                 LabelWithTextField(
                   label: 'CVV',
                   controller: _cvvController,
-                  prefixIcon: Icons.password,
+                  icon: Icons.password,
                   hintText: 'Enter cvv',
+                  prefixIcon: Icons.password,
                 ),
                 const Spacer(),
                 SizedBox(
@@ -67,7 +71,8 @@ class _AddNewCardPageState extends State<AddNewCardPage> {
                   height: 50,
                   child: BlocConsumer<PaymentMethodsCubit, PaymentMethodsState>(
                     bloc: cubit,
-                    listenWhen: (previous, current) => current is AddNewCardSuccess ||
+                    listenWhen: (previous, current) =>
+                        current is AddNewCardSuccess ||
                         current is AddNewCardFailure,
                     listener: (context, state) {
                       if (state is AddNewCardSuccess) {
@@ -80,7 +85,8 @@ class _AddNewCardPageState extends State<AddNewCardPage> {
                         );
                       }
                     },
-                    buildWhen: (previous, current) => current is AddNewCardLoading ||
+                    buildWhen: (previous, current) =>
+                        current is AddNewCardLoading ||
                         current is AddNewCardSuccess ||
                         current is AddNewCardFailure,
                     builder: (context, state) {

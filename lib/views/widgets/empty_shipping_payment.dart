@@ -6,7 +6,9 @@ import 'package:flutter_ecommerce_app/view_models/checkout_cubit/checkout_cubit.
 
 class EmptyShippingPayment extends StatelessWidget {
   final String title;
-  const EmptyShippingPayment({super.key, required this.title});
+  final bool isPayment;
+  const EmptyShippingPayment(
+      {super.key, required this.title, required this.isPayment});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,15 @@ class EmptyShippingPayment extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        Navigator.of(context).pushNamed(AppRoutes.addNewCardRoute).then((value) => checkoutCubit.getCartItems(),);
+        if (isPayment) {
+          Navigator.of(context).pushNamed(AppRoutes.addNewCardRoute).then(
+                (value) => checkoutCubit.getCartItems(),
+              );
+        } else {
+          Navigator.of(context).pushNamed(AppRoutes.chooseLocation).then(
+                (value) => checkoutCubit.getCartItems(),
+              );
+        }
       },
       child: Container(
         width: double.infinity,
@@ -30,8 +40,7 @@ class EmptyShippingPayment extends StatelessWidget {
                 Icons.add,
                 size: 30,
               ),
-              Text(title,
-                  style: Theme.of(context).textTheme.labelLarge),
+              Text(title, style: Theme.of(context).textTheme.labelLarge),
             ],
           ),
         ),
