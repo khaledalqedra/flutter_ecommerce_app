@@ -40,49 +40,8 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBDZtGxETIcGt-_EKVrLSx_lb_1APt5S7M',
-    appId: '1:104262544752:web:213670acabf21e956433b5',
-    messagingSenderId: '104262544752',
-    projectId: 'e-commerce-flutter-e8176',
-    authDomain: 'e-commerce-flutter-e8176.firebaseapp.com',
-    storageBucket: 'e-commerce-flutter-e8176.firebasestorage.app',
-    measurementId: 'G-MK3JP5LG31',
-  );
+ feat(auth): integrate Firebase Auth with email/password login and Google sign-in
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB2fge7nkklNoNB-X6TknrAkKf34la2rhk',
-    appId: '1:104262544752:android:a4de154bee02fd3c6433b5',
-    messagingSenderId: '104262544752',
-    projectId: 'e-commerce-flutter-e8176',
-    storageBucket: 'e-commerce-flutter-e8176.firebasestorage.app',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA0fy22bP4FU6XePc2fNBaArovhp186r2w',
-    appId: '1:104262544752:ios:338a4fa0afb95a2d6433b5',
-    messagingSenderId: '104262544752',
-    projectId: 'e-commerce-flutter-e8176',
-    storageBucket: 'e-commerce-flutter-e8176.firebasestorage.app',
-    iosBundleId: 'com.example.flutterEcommerceApp',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyA0fy22bP4FU6XePc2fNBaArovhp186r2w',
-    appId: '1:104262544752:ios:338a4fa0afb95a2d6433b5',
-    messagingSenderId: '104262544752',
-    projectId: 'e-commerce-flutter-e8176',
-    storageBucket: 'e-commerce-flutter-e8176.firebasestorage.app',
-    iosBundleId: 'com.example.flutterEcommerceApp',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBDZtGxETIcGt-_EKVrLSx_lb_1APt5S7M',
-    appId: '1:104262544752:web:4be03b11ee464cfa6433b5',
-    messagingSenderId: '104262544752',
-    projectId: 'e-commerce-flutter-e8176',
-    authDomain: 'e-commerce-flutter-e8176.firebaseapp.com',
-    storageBucket: 'e-commerce-flutter-e8176.firebasestorage.app',
-    measurementId: 'G-ENTKW9GB09',
-  );
-}
+- Add AuthCubit with login, register, logout, and Google auth
+- Handle auth states (loading, done, error, logging out)
+- Redirect to home on successful login, login page on logout
