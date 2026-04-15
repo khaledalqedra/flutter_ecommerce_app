@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_app/utils/app_colors.dart';
 import 'package:flutter_ecommerce_app/utils/app_routes.dart';
+import 'package:flutter_ecommerce_app/view_models/auth_cubit/auth_cubit.dart';
 import 'package:flutter_ecommerce_app/views/widgets/label_with_textfield.dart';
 import 'package:flutter_ecommerce_app/views/widgets/main_botton.dart';
 import 'package:flutter_ecommerce_app/views/widgets/social_media_button.dart';
@@ -19,6 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    final cubit = BlocProvider.of<AuthCubit>(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -56,24 +59,51 @@ class _RegisterPageState extends State<RegisterPage> {
                       hintText: 'Enter your email'),
                   const SizedBox(height: 24),
                   LabelWithTextField(
-                      label: 'Password',
-                      controller: passwordController,
-                      prefixIcon: Icons.lock,
-                      icon: Icons.password,
-                      hintText: 'Enter your password',
-                        obsecureText: true,
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.visibility),
-                        onPressed: () {},
-                      ),
+                    label: 'Password',
+                    controller: passwordController,
+                    prefixIcon: Icons.lock,
+                    icon: Icons.password,
+                    hintText: 'Enter your password',
+                    obsecureText: true,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.visibility),
+                      onPressed: () {},
+                    ),
                   ),
                   const SizedBox(height: 40),
-                  MainBotton(
-                    text: 'Create Account',
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        Navigator.of(context).pushNamed(AppRoutes.homeRoute); 
+                  BlocConsumer<AuthCubit, AuthState>(
+                    bloc: cubit,
+                    listenWhen: (previous, current) => current is AuthDone || current is AuthError,
+                    listener: (context, state) {
+                      if (state is AuthDone) {
+                        Navigator.of(context).pushNamed(AppRoutes.homeRoute);
+                      } else if (state is AuthError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(state.message)),
+                        );
                       }
+                    },
+                    buildWhen: (previous, current) =>
+                        current is AuthLoading ||
+                        current is AuthError ||
+                        current is AuthDone,
+                    builder: (context, state) {
+                      if (state is AuthLoading) {
+                        return MainBotton(
+                          isLoading: true,
+                        );
+                      }
+                      return MainBotton(
+                        text: 'Create Account',
+                        onTap: () async {
+                          if (_formKey.currentState!.validate()) {
+                            await cubit.registerWithEmailAndPassword(
+                              emailController.text,
+                              passwordController.text,
+                            );
+                          }
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 8),
@@ -97,13 +127,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   SocialMediaButton(
-                      text: 'Signup With Google', 
-                      imgUrl: 'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png', 
+                      text: 'Signup With Google',
+                      imgUrl:
+                          'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png',
                       onTap: () {}),
                   const SizedBox(height: 16),
                   SocialMediaButton(
                       text: 'Signup With Facebook',
-                      imgUrl: 'https://www.freepnglogos.com/uploads/facebook-logo-icon/facebook-logo-icon-facebook-logo-png-transparent-svg-vector-bie-supply-15.png',
+                      imgUrl:
+                          'https://www.freepnglogos.com/uploads/facebook-logo-icon/facebook-logo-icon-facebook-logo-png-transparent-svg-vector-bie-supply-15.png',
                       onTap: () {}),
                 ],
               ),

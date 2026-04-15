@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_app/utils/app_colors.dart';
 import 'package:flutter_ecommerce_app/utils/app_routes.dart';
+import 'package:flutter_ecommerce_app/view_models/auth_cubit/auth_cubit.dart';
 import 'package:flutter_ecommerce_app/views/widgets/label_with_textfield.dart';
 import 'package:flutter_ecommerce_app/views/widgets/main_botton.dart';
 import 'package:flutter_ecommerce_app/views/widgets/social_media_button.dart';
@@ -16,8 +18,10 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
+    final cubit = BlocProvider.of<AuthCubit>(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -48,16 +52,16 @@ class _LoginPageState extends State<LoginPage> {
                       hintText: 'Enter your email'),
                   const SizedBox(height: 24),
                   LabelWithTextField(
-                      label: 'Password',
-                      controller: passwordController,
-                      prefixIcon: Icons.lock,
-                      icon: Icons.password,
-                      hintText: 'Enter your password',
-                        obsecureText: true,
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.visibility),
-                        onPressed: () {},
-                      ),
+                    label: 'Password',
+                    controller: passwordController,
+                    prefixIcon: Icons.lock,
+                    icon: Icons.password,
+                    hintText: 'Enter your password',
+                    obsecureText: true,
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.visibility),
+                      onPressed: () {},
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Align(
@@ -70,12 +74,39 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  MainBotton(
-                    text: 'Login',
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                      Navigator.of(context).pushNamed(AppRoutes.homeRoute); 
+                  BlocConsumer<AuthCubit, AuthState>(
+                    bloc: cubit,
+                    listenWhen: (previous, current) =>
+                        current is AuthDone || current is AuthError,
+                    listener: (context, state) {
+                      if (state is AuthDone) {
+                        Navigator.of(context)
+                            .pushReplacementNamed(AppRoutes.homeRoute);
+                      } else if (state is AuthError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(state.message)),
+                        );
                       }
+                    },
+                    buildWhen: (previous, current) =>
+                        current is AuthLoading ||
+                        current is AuthError ||
+                        current is AuthDone,
+                    builder: (context, state) {
+                      if (state is AuthLoading) {
+                        return MainBotton(
+                          isLoading: true,
+                        );
+                      }
+                      return MainBotton(
+                        text: 'Login',
+                        onTap: () async {
+                          if (_formKey.currentState!.validate()) {
+                            await cubit.loginWithEmailAndPassword(
+                                emailController.text, passwordController.text);
+                          }
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 8),
@@ -83,7 +114,8 @@ class _LoginPageState extends State<LoginPage> {
                     alignment: Alignment.center,
                     child: TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed(AppRoutes.registerRoute);
+                        Navigator.of(context)
+                            .pushNamed(AppRoutes.registerRoute);
                       },
                       child: const Text('Don\'t have an account? Register'),
                     ),
@@ -98,14 +130,40 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                     ),
                   ),
-                  SocialMediaButton(
-                      text: 'Login With Google', 
-                      imgUrl: 'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png', 
-                      onTap: () {}),
+                  BlocConsumer<AuthCubit, AuthState>(
+                    bloc: cubit,
+                    listenWhen: (previous, current) => current is GoogleAuthDone || current is GoogleAuthError,
+                    listener: (context, state) {
+                      if (state is GoogleAuthDone) {
+                        Navigator.of(context)
+                            .pushReplacementNamed(AppRoutes.homeRoute);
+                      } else if (state is GoogleAuthError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(state.message)),
+                        );
+                      }
+                      
+                    },
+                    buildWhen: (previous, current) => current is GoogleAuthenticating || current is GoogleAuthError || current is GoogleAuthDone,
+                    builder: (context, state) {
+                      if (state is GoogleAuthenticating) {
+                        return  SocialMediaButton(
+                          isLoading: true,
+                        );
+                      }
+                      return SocialMediaButton(
+                        text: 'Login With Google',
+                        imgUrl:
+                            'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png',
+                        onTap: () async => await cubit.authenticateWithGoogle(),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 16),
                   SocialMediaButton(
                       text: 'Login With Facebook',
-                      imgUrl: 'https://www.freepnglogos.com/uploads/facebook-logo-icon/facebook-logo-icon-facebook-logo-png-transparent-svg-vector-bie-supply-15.png',
+                      imgUrl:
+                          'https://www.freepnglogos.com/uploads/facebook-logo-icon/facebook-logo-icon-facebook-logo-png-transparent-svg-vector-bie-supply-15.png',
                       onTap: () {}),
                 ],
               ),

@@ -11,12 +11,16 @@ environment:
 dependencies:
   cached_network_image: ^3.4.1
   cupertino_icons: ^1.0.8
+  firebase_auth: ^6.1.4
+  firebase_core: ^4.4.0
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_carousel_widget: ^3.1.0
   flutter_dash: ^1.0.0
+  flutter_facebook_auth: ^7.1.6
   flutter_native_splash: ^2.4.7
+  google_sign_in: ^6.2.1
   main_persistent_bottom_nav_bar_v2: ^4.2.9
 
 dev_dependencies:
@@ -29,38 +33,29 @@ flutter:
   #  assets:
   #   - images/a_dot_burr.jpeg
 
-
 flutter_native_splash:
-  color: "#673AB7"  
-  #background_image:      "assets/background.png" 
-  
-
+  color: "#673AB7"
+  #background_image:      "assets/background.png"
   # general image for all platform (except android 12+):
   # allows you to specify an image used in the splash screen. It must be a
   # png file and should be sized for 4x pixel density.
-  image:  assets/images/splash.png
+  image: assets/images/splash.png
 
-  
- 
-  # hide notif bar on android. ios already hides it by default. 
+  # hide notif bar on android. ios already hides it by default.
   # Has no effect in web since web has no notification bar.
-  fullscreen: true                # default false
-  
+  fullscreen: true # default false
+
   #! ANDROID 12+ configuration:
   android_12:
     # background color
     color: "#673AB7"
     # color_dark: "#042a49"
-
-   
-    image: assets/images/splash.png   
-    # image_dark: assets/images/logo/logo-splash2.png  
-
+    image: assets/images/splash.png
+    # image_dark: assets/images/logo/logo-splash2.png
     # center-logo background color
     icon_background_color: "#111111"
     # icon_background_color_dark: "#eeeeee"
-
     # branding:
     # The branding image dimensions must be 800x320 px.
-    #branding:      assets/dart.png      
+    #branding:      assets/dart.png
     #branding_dark: assets/dart_dark.png
