@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(not exist *)",
+      "Bash(mkdir -p .claude/commands)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Khaled\\flutter_ecommerce_app\\.claude"
+    ]
+  }
+}

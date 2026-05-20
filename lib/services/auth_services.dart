@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class AuthServices {
-  Future<void> loginWithEmailAndPassword(String email, String password);
-  Future<void> registerWithEmailAndPassword(String email, String password);
+  Future<bool> loginWithEmailAndPassword(String email, String password);
+  Future<bool> registerWithEmailAndPassword(String email, String password);
   Future<bool> authenticateWithGoogle();
   User? CurrentUser();
   Future<void> logout();

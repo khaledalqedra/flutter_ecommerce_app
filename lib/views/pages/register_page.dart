@@ -19,6 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     final cubit = BlocProvider.of<AuthCubit>(context);
@@ -73,7 +74,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 40),
                   BlocConsumer<AuthCubit, AuthState>(
                     bloc: cubit,
-                    listenWhen: (previous, current) => current is AuthDone || current is AuthError,
+                    listenWhen: (previous, current) =>
+                        current is AuthDone || current is AuthError,
                     listener: (context, state) {
                       if (state is AuthDone) {
                         Navigator.of(context).pushNamed(AppRoutes.homeRoute);
@@ -93,6 +95,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           isLoading: true,
                         );
                       }
+
                       return MainBotton(
                         text: 'Create Account',
                         onTap: () async {
@@ -100,6 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             await cubit.registerWithEmailAndPassword(
                               emailController.text,
                               passwordController.text,
+                              usernameController.text,
                             );
                           }
                         },

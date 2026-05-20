@@ -1,6 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_ecommerce_app/models/user_data.dart';
 import 'package:flutter_ecommerce_app/services/auth_services.dart';
+import 'package:flutter_ecommerce_app/services/firestore_services.dart';
+import 'package:flutter_ecommerce_app/utils/api.paths.dart';
 
 part 'auth_state.dart';
 
@@ -8,53 +10,54 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial());
 
   final AuthServices authServices = AuthServicesImpl();
+  final firestoreServices = FirestoreServices.instance;
 
-  Future<void> loginWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
+ Future<void> loginWithEmailAndPassword(String email, String password) async {
     emit(AuthLoading());
-
     try {
-      await authServices.loginWithEmailAndPassword(email, password);
-
-      emit(const AuthDone());
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        emit(const AuthError('No user found for that email.'));
-      } else if (e.code == 'wrong-password') {
-        emit(const AuthError('Wrong password provided.'));
+      final result =
+          await authServices.loginWithEmailAndPassword(email, password);
+      if (result) {
+        emit(const AuthDone());
       } else {
-        emit(AuthError(e.message ?? 'Login failed'));
-      }
+        emit(const AuthError('Login failed'));
+      } 
     } catch (e) {
-      emit(const AuthError('Something went wrong'));
+      emit(AuthError(e.toString()));
     }
   }
 
   Future<void> registerWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
+      String email, String password, String username) async {
     emit(AuthLoading());
-
     try {
-      await authServices.registerWithEmailAndPassword(email, password);
-
-      emit(const AuthDone());
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        emit(const AuthError('This email is already registered.'));
-      } else if (e.code == 'weak-password') {
-        emit(const AuthError('The password is too weak.'));
-      } else if (e.code == 'invalid-email') {
-        emit(const AuthError('The email address is invalid.'));
+      final result =
+          await authServices.registerWithEmailAndPassword(email, password);
+      if (result) {
+        await _saveUserData(email, username);
+        emit(const AuthDone());
       } else {
-        emit(AuthError(e.message ?? 'Registration failed'));
+        emit(const AuthError('Register failed'));
       }
     } catch (e) {
-      emit(const AuthError('Something went wrong'));
+      emit(AuthError(e.toString()));
     }
+  }
+
+
+  Future<void> _saveUserData(String email, String username) async {
+    final currentUser = authServices.CurrentUser();
+    final userData = UserData(
+      id: currentUser!.uid,
+      username: username,
+      email: email,
+      createdAt: DateTime.now().toIso8601String(),
+    );
+
+    await firestoreServices.setData(
+      path: ApiPaths.users(userData.id),
+      data: userData.toMap(),
+    );
   }
 
   void checkAuth() {
@@ -73,12 +76,12 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthLogoutError(e.toString()));
     }
   }
-
+  
   Future<void> authenticateWithGoogle() async {
     emit(const GoogleAuthenticating());
     try {
-      final success = await authServices.authenticateWithGoogle();
-      if (success) {
+      final result = await authServices.authenticateWithGoogle();
+      if (result) {
         emit(const GoogleAuthDone());
       } else {
         emit(const GoogleAuthError('Google authentication failed'));
